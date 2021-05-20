@@ -10,7 +10,20 @@
 В [сериалайзерах](/crud/serializers.py) добавил поля только для чтения (`last_login`, `is_superuser`), \
 поля только для записи (`password`) и обязательные поля (`username`, `password`, `is_active`).
 
+### `views.py`
+1. [Class based views](https://github.com/WannaFight/crud-token/blob/52c7616c32d952c5c126499c2c811ffffbfcdaba/crud/views.py)
+2. [Class based views with mixins](https://github.com/WannaFight/crud-token/blob/e6da698c4581b8aab919f16f2db53b89db67e2e4/crud/views.py)
+3. [Class based views with generics](https://github.com/WannaFight/crud-token/blob/a4d51e1c74c55ea33d6e2736fed9757d26833de9/crud/views.py) (current)
 
+Также при DELETE добавил проверку:
+```python
+if kwargs['pk'] == request.user.pk:
+    return Response(
+        {'detail': "You can not delete yourself."},
+        status=status.HTTP_409_CONFLICT
+    )
+```
+Таким образом пользователь не может удалить сам себя через запрос к API.
 ## Как запустить
 ```shell
 ~$ git clone ... && cd emphasoft_test
