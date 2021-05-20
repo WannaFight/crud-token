@@ -22,6 +22,10 @@ if kwargs['pk'] == request.user.pk:
     )
 ```
 Таким образом пользователь не может удалить сам себя через запрос к API.
+
+### Тесты [тут](/crud/tests.py/)
+Написал тесты для UserList и UserDetail
+
 ## Как запустить
 ```shell
 ~$ git clone ... && cd emphasoft_test
