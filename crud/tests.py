@@ -73,3 +73,47 @@ class UserListTests(APITestCase):
         resp = self.client.post(self.url, data=data)
 
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class UserDetailTest(APITestCase):
+    def setUp(self) -> None:
+        user = User.objects.create_user(username='egg', password='egg')
+        Token.objects.create(user=user)
+        User.objects.create_user(username='spam', password='spam')
+
+    def tearDown(self) -> None:
+        User.objects.all().delete()
+        Token.objects.all().delete()
+
+    def test_self_delete(self):
+        """
+        Make sure we can't delete ourselves and get HTTP 409
+        """
+        user = User.objects.get(username='egg')
+        token, pk = user.auth_token.key, user.pk
+        resp = self.client.delete(
+            reverse('crud:detail', args=(pk,)),
+            **{'HTTP_AUTHORIZATION': f"Token {token}"}
+        )
+        self.assertEqual(resp.status_code, status.HTTP_409_CONFLICT)
+
+    def test_delete_with_auth(self):
+        """
+        Make sure we can delete users and get HTTP 204
+        """
+        pk = User.objects.get(username='spam').pk
+        token = User.objects.get(username='egg').auth_token.key
+        resp = self.client.delete(
+            reverse('crud:detail', args=(pk,)),
+            **{'HTTP_AUTHORIZATION': f"Token {token}"}
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_no_auth(self):
+        pk = User.objects.get(username='egg').pk
+        resp = self.client.delete(
+            reverse('crud:detail', args=(pk,))
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
