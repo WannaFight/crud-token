@@ -1,7 +1,4 @@
-from typing import Union
-
 from django.contrib.auth.models import User
-from django.http import Http404
 from rest_framework import mixins, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,13 +16,13 @@ class UserList(mixins.ListModelMixin,
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> Response:
         """
         Return every user from auth_user table without `write_only` fields.
         """
         return self.list(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> Response:
         """
         Create new user in auth_user table and return created user.
         """
@@ -44,13 +41,13 @@ class UserDetail(mixins.RetrieveModelMixin,
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get(self, request, *args, **kwargs) -> Union[Response, Http404]:
+    def get(self, request, *args, **kwargs) -> Response:
         """
         Return single user with id==`pk` or 404.
         """
         return self.retrieve(request, *args, **kwargs)
 
-    def put(self, request, *args, **kwargs) -> Union[Response, Http404]:
+    def put(self, request, *args, **kwargs) -> Response:
         """
         Update fields for user with id==`pk` and return a new one.
 
@@ -59,14 +56,14 @@ class UserDetail(mixins.RetrieveModelMixin,
         """
         return self.update(request, *args, **kwargs)
 
-    def patch(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs) -> Response:
         """
         Partially update fields for user with id==`pk`.
         """
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request, *args, **kwargs) -> Response:
         """
         Delete user with id==`pk`.
         """
